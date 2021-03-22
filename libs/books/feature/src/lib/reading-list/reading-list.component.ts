@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+import { addToReadingList, getReadingList, removeFromReadingList } from '@tmo/books/data-access';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'tmo-reading-list',
@@ -11,9 +12,25 @@ import { getReadingList, removeFromReadingList } from '@tmo/books/data-access';
 export class ReadingListComponent {
   readingList$ = this.store.select(getReadingList);
 
-  constructor(private readonly store: Store) {}
+  constructor(
+    private readonly store: Store,
+    private readonly _snackBar: MatSnackBar
+  ) {}
 
-  removeFromReadingList(item) {
+  removeFromReadingList(item: any) {
     this.store.dispatch(removeFromReadingList({ item }));
+    this.openSnackBar({
+      message: "Book removed from reading list",
+      action: "Undo",
+      options: {
+        duration :2000,
+        verticalPosition: 'top'
+      }
+    }).onAction().subscribe((_) => this.store.dispatch(addToReadingList({book: item})))
+  }
+
+  openSnackBar(config: any){
+    const { message, action, options} = config;
+    return this._snackBar.open(message,action,options)
   }
 }
