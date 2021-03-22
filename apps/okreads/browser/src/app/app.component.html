@@ -5,8 +5,10 @@
         <h1>okreads</h1>
         <div>
           <button
+            aria-label="reading-list"
+            color="primary"
             data-testing="toggle-reading-list"
-            mat-button
+            mat-raised-button
             (click)="drawer.toggle()"
           >
             Reading List
@@ -23,7 +25,7 @@
     <div class="reading-list-container" data-testing="reading-list-container">
       <h2>
         My Reading List
-        <button mat-icon-button (click)="drawer.close()">
+        <button mat-icon-button (click)="drawer.close()" aria-label = "Close List">
           <mat-icon>close</mat-icon>
         </button>
       </h2>
