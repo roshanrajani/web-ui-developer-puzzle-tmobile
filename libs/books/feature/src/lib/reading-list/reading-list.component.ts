@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { getReadingList, removeFromReadingList, confirmedUpdateMarkAsFinished, undoUpdateMarkAsFinished } from '@tmo/books/data-access';
+import { getReadingList, removeFromReadingList, updateMarkAsFinished, undoUpdateMarkAsFinished } from '@tmo/books/data-access';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -11,6 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class ReadingListComponent {
   readingList$ = this.store.select(getReadingList);
+  checked: Boolean;
 
   constructor(private readonly store: Store, private snackBar: MatSnackBar) {}
 
@@ -19,14 +20,18 @@ export class ReadingListComponent {
   }
 
   onFinishButtonClick(item) {
-    this.store.dispatch(confirmedUpdateMarkAsFinished({ item }));
+    this.store.dispatch(updateMarkAsFinished({ item }));
+
     let message = 'Marked Book as Finished';
+
     if (item.finished) {
       message = 'Removed Book as Finished';
     }
+
     let snackBarRef = this.snackBar.open(message, 'Undo', {
       duration: 5000
     });
+
     snackBarRef.onAction().subscribe(() => {
       item = {
         ...item,

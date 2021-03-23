@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { catchError, concatMap, exhaustMap, map } from 'rxjs/operators';
 import { ReadingListItem } from '@tmo/shared/models';
 import * as ReadingListActions from './reading-list.actions';
+import { fetch, optimisticUpdate } from '@nrwl/angular';
 
 @Injectable()
 export class ReadingListEffects implements OnInitEffects {
@@ -55,23 +56,48 @@ export class ReadingListEffects implements OnInitEffects {
   );
 
   // Update(PUT) API added to mark book as Read.
-  updateBookAsFinished$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(ReadingListActions.updateAsFinishedReading),
-      concatMap(({ item }) =>
-        this.http.put(`/api/reading-list/${item.bookId}/finished`, item).pipe(
-          map(() => ReadingListActions.confirmAsFinishedReading()),
-          catchError(() =>
-            of(
-              ReadingListActions.failedToUpdateAsFinishedReading({
-                item: { ...item, finished: false, finishedDate: '' },
-              })
-            )
-          )
-        )
-      )
-    )
-  );
+  updateMarkAsFinished$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(
+      ReadingListActions.updateMarkAsFinished,
+      ReadingListActions.undoUpdateMarkAsFinished
+    ),
+    optimisticUpdate({
+      run: ({ item }) => {
+        item = {
+          ...item,
+          finished: !item.finished,
+          finishedDate: new Date().toISOString()
+        };
+        return this.http
+          .put(`/api/reading-list/${item.bookId}/finished`, item)
+          .pipe(
+            map(() => {
+              const updatedItem = {
+                id: item.bookId,
+                changes: {
+                  ...item
+                }
+              };
+              return ReadingListActions.confirmAsFinishedReading({ item: updatedItem });
+            })
+          );
+      },
+      undoAction: ({ item }) => {
+        const updatedItem = {
+          id: item.bookId,
+          changes: {
+            ...item,
+            finished: !item.finished
+          }
+        };
+        return ReadingListActions.failedToUpdateAsFinishedReading({
+          item: updatedItem
+        });
+      }
+    })
+  )
+);
 
   ngrxOnInitEffects() {
     return ReadingListActions.init();

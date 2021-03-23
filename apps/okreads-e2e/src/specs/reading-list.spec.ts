@@ -34,7 +34,7 @@ describe('When: Reading list feature', () => {
   });
 
   it('Then: Should be able to add books to the reading list and mark as finished reading when done', async () => {
-    const submitbutton = await $('mat-icon');
+    const submitbutton = await $('[data-testing="finish-book-toggle"]');
     const input = await $('input[type="search"]');
     await input.sendKeys('javascript');
     await submitbutton.click();

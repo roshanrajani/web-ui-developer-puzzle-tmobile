@@ -34,10 +34,4 @@ describe('ReadingListComponent', () => {
     component.removeFromReadingList(item);
     expect(spyDispatch).toHaveBeenCalled;
   });
-
-  it('markAsFinishedReadingFromList action', () => {
-    const item = createReadingListItem('new');
-    component.markAsFinishedReadingFromList(item);
-    expect(spyDispatch).toHaveBeenCalled;
-  });
 });
