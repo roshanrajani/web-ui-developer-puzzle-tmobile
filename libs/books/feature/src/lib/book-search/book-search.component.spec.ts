@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { waitForAsync, ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedTestingModule } from '@tmo/shared/testing';
 
@@ -9,7 +9,7 @@ describe('BookSearchComponent', () => {
   let component: BookSearchComponent;
   let fixture: ComponentFixture<BookSearchComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [BooksFeatureModule, NoopAnimationsModule, SharedTestingModule]
     }).compileComponents();
