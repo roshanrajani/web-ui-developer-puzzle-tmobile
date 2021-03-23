@@ -38,7 +38,7 @@
               [disabled]="b.isAdded"
               [attr.aria-label] = "'Read the book titled, ' + b.title + 'by ' + b.authors.join(',')"
             >
-              Want to Read
+              {{ b ?. finished ? 'Finished' : 'Want to Read' }}
             </button>
           </div>
         </div>
